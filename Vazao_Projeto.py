@@ -121,9 +121,9 @@ Tempo_Retorno = int (input('Digite o tempo de retorno em anos: '))
 DESNIVEL = Cota_Maxima - Cota_Controle
 DECLIVIDADE = DESNIVEL/(Comprimento_Curso*1000)
 # Chamada das funções
-COEFICIENTE = coeficienterunoff(DECLIVIDADE)
 TEMPO_CONCENTRACAO = tempo(Comprimento_Curso, DESNIVEL)
 INTENSIDADE = intensidade(Tempo_Retorno, TEMPO_CONCENTRACAO)
+COEFICIENTE = coeficienterunoff(DECLIVIDADE)
 VAZAO_Q = vazao(COEFICIENTE, INTENSIDADE, Area_Bacia)
 
 # Resultados
