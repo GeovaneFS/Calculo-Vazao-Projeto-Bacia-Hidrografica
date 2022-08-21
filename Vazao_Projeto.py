@@ -17,7 +17,14 @@ def tempo (cursoagua, variacaoaltura):
 # def intensidade de precipitação
 def intensidade (TR, TC):
     '''Calculo intensidade de precipitação'''
-    Intensidade = ((842.702*(TR**0.179))/(10.39+TC)**0.736)
+    print ('Entre com as constantes de ajuste local:')
+    k = float (input ('Digite o valor de k: '))
+    a = float (input ('Digite o valor de a: '))
+    b = float (input ('Digite o valor de b: '))
+    c = float (input ('Digite o valor de c: '))
+    print ('\n')
+    
+    Intensidade = ((k*(TR**a))/(b+TC)**c)
     return Intensidade
 
 # def vazao de projeto
@@ -33,6 +40,7 @@ def coeficienterunoff (Declividade):
 
     TipoSolo = int (input ('Qual o tipo de Solo da área? 1 - Solo Arenoso, 2 - Solo Franco, 3 - Solo Argiloso: '))
     UsodeArea = int (input ('Qual o uso e ocupação da área? 1 - Florestas, 2 - Pastagens, 3 - Terras Cultivadas: '))
+    print ('\n')
 
     if D >= 0 and D <= 5:
         if TipoSolo == 1:
@@ -104,15 +112,10 @@ def coeficienterunoff (Declividade):
 
 # Dados de entrada (obtidos apos delimitação da área)
 Area_Bacia = float(input('Digite a area da bacia em km²: '))
-print ('\n')
 Comprimento_Curso = float(input('Digite o comprimento do curso dágua em km: '))
-print ('\n')
 Cota_Maxima = float(input('Digite a cota maxima da Bacia Hidrografica em m: '))
-print ('\n')
 Cota_Controle = float(input('Digite a conta do ponto de controle: '))
-print ('\n')
 Tempo_Retorno = int (input('Digite o tempo de retorno em anos: '))
-print ('\n')
 
 # Contas basicas
 DESNIVEL = Cota_Maxima - Cota_Controle
