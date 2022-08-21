@@ -1,10 +1,12 @@
-'''Geovane Fernandes - o Código abaixo visa o calculo da vazão de projeto para uma bacia hidrografica
-    sendo este calculo necessário para obtenção de outorgas para uso da água e ou dispensa de outorgas
-    as equações utilizadas abaixo segundo literatura são utilizadas para bacias hidrograficas pequenas com áreas de até
-    2 km² e tempo de concentração menor que 1 hora.
+'''
+Geovane Fernandes - o Código abaixo visa o calculo da vazão de projeto para uma bacia hidrografica
+sendo este calculo necessário para obtenção de outorgas para uso da água e ou dispensa de outorgas
+as equações utilizadas abaixo segundo literatura são utilizadas para bacias hidrograficas pequenas com áreas de até
+2 km² e tempo de concentração menor que 1 hora.
     
-    a equação utilizada na função intensidade de precipitação, serve apenas para o municipio de Lavras - MG, onde as constantes
-    foram encontradas apos analise de dados historicos de chuva compreendidos entre 1914 e 1991.'''
+NOTE: a equação utilizada na função intensidade de precipitação, possui constantes/paramentros que dependendem do local/região de aplicação, 
+os quais deveram ser pesquisados para região de interesse.
+'''
 
 # def tempo de concentração chuva Kirpich
 def tempo (cursoagua, variacaoaltura):
