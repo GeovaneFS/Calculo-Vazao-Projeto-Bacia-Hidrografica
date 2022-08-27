@@ -11,24 +11,31 @@ import json
 with open('RelacaoIDF.json') as arquivo:
     data = json.load(arquivo)
 
+
 def tempo (cursoagua, variacaoaltura):
     '''Calculo tempo de concentração usando equação de Kirpich'''
-    Tempo_Concentracao = 57*(((cursoagua**3)/(variacaoaltura))**0.385)
-          
+    Tempo_Concentracao = 57*(((cursoagua**3)/(variacaoaltura))**0.385)          
     return Tempo_Concentracao
 
-# def intensidade de precipitação
-def intensidade (TR, TC, Nome_Municipio):
-    '''Determinando intensidade de precipitação'''
-    for i in data:
-        if i['cidade'] == Nome_Municipio.upper():
-            k = float (i['k'])
-            a = float (i['m'])
-            b = float (i['t'])
-            c = float (i['n'])
 
-    Intensidade = ((k*(TR**a))/(b+TC)**c)
+def ProcuraMunicipio (Nome_Municipio):
+    '''Procurando municipio'''    
+    for i in data: #percorrendo o arquivo json e extraindo os dados
+        if i['cidade'] == Nome_Municipio.upper():
+            # passar dados do municipio para dicionario
+            Relacao_IDF = {'k': i['k'], 'm': i['m'], 't': i['t'], 'n': i['n']}
+            return Relacao_IDF
+        if i == data[-1]:
+            return 'Municipio não encontrado'
+
+
+# def intensidade de precipitação
+def intensidade (TR, TC, **IDF):
+    '''Determinando intensidade de precipitação'''
+   
+    Intensidade = ((IDF['k']*(TR**IDF['m']))/(IDF['t']+TC)**IDF['n'])
     return Intensidade
+
 
 # def vazao de projeto
 def vazao (coeficiente, I, area):
@@ -36,18 +43,22 @@ def vazao (coeficiente, I, area):
     Vazao_Projeto = (coeficiente*I*area)/3.6
     return Vazao_Projeto
 
+
 # def tabela coeficiente de runoff (C)
 def coeficienterunoff (Declividade):
     '''Determinando Coeficiente'''
     D = Declividade*100 #Convertendo para porcentagem
     
     TipoSolo = int (input ('Qual o tipo de Solo da área? 1 - Solo Arenoso, 2 - Solo Franco, 3 - Solo Argiloso: '))
+    # fazer controle caso seja digitado um valor diferente de 1, 2 ou 3
     while TipoSolo != 1 and TipoSolo != 2 and TipoSolo != 3:
-        TipoSolo = int (input ('Digite um valor válido:\n' + '1 - Solo Arenoso\n' + '2 - Solo Franco\n' + '3 - Solo Argiloso: '))
-        
-    UsodeArea = int (input ('Qual o uso e ocupação da área? 1 - Florestas, 2 - Pastagens, 3 - Terras Cultivadas: '))    
+        TipoSolo = int (input ('Digite um valor válido:\n' + '1 - Solo Arenoso\n'\
+                        + '2 - Solo Franco\n' + '3 - Solo Argiloso: '))
+    UsodeArea = int (input ('Qual o uso e ocupação da área? 1 - Florestas, 2 - Pastagens, 3 - Terras Cultivadas: '))
+    # fazer controle caso seja digitado um valor diferente de 1, 2 ou 3
     while UsodeArea != 1 and UsodeArea != 2 and UsodeArea != 3:
-        UsodeArea = int (input ('Digite um valor válido:\n' + '1 - Florestas\n' + '2 - Pastagens\n' + '3 - Terras Cultivadas: '))
+        UsodeArea = int (input ('Digite um valor válido:\n' + '1 - Florestas\n'\
+                        + '2 - Pastagens\n' + '3 - Terras Cultivadas: '))
 
     if D >= 0 and D <= 5:
         if TipoSolo == 1:
@@ -117,33 +128,35 @@ def coeficienterunoff (Declividade):
                 C = 0.80
     return C
 
-# Dados de entrada (obtidos apos delimitação da área)
+
 Nome_Municipio = input ('Digite o nome do municipio: ')
 
-#importar cidades do arquivo json para uma lista e fazer a busca pelo nome do municipio
-for i in data:
-    #se municipio for igual ao nome do municipio
-    if i['cidade'] == Nome_Municipio.upper():
-        Area_Bacia = float(input('Digite a area da bacia em km²: '))
-        Comprimento_Curso = float(input('Digite o comprimento do curso dágua em km: '))
-        Cota_Maxima = float(input('Digite a cota maxima da Bacia Hidrografica em m: '))
-        Cota_Controle = float(input('Digite a conta do ponto de controle: '))
-        Tempo_Retorno = int (input('Digite o tempo de retorno em anos: '))
-        print ('\n')
-        # Contas basicas
-        DESNIVEL = Cota_Maxima - Cota_Controle
-        DECLIVIDADE = DESNIVEL/(Comprimento_Curso*1000)
-        # Chamada das funções
-        TEMPO_CONCENTRACAO = tempo(Comprimento_Curso, DESNIVEL)
-        INTENSIDADE = intensidade(Tempo_Retorno, TEMPO_CONCENTRACAO, Nome_Municipio)
-        COEFICIENTE = coeficienterunoff(DECLIVIDADE)
-        VAZAO_Q = vazao(COEFICIENTE, INTENSIDADE, Area_Bacia)
-        # Resultados
-        print ('\nTempo de concentracao da chuva e:' ,round(TEMPO_CONCENTRACAO,2),'minutos \n')
-        print ('A intensidade de precipitação e:', round(INTENSIDADE,2),'mm/h \n')
-        print('Vazao de projeto: ',round (VAZAO_Q,2), 'm³/s')
-        print ('\n')
-        break
-    if i == data[-1]: #se a posição for igual ao ultimo elemento da lista
-        print ('Municipio nao encontrado')
-        break
+#chama a função procurar município e extrai as informações necessárias se o município for encontrado
+Relacao_IDF = ProcuraMunicipio (Nome_Municipio)
+
+if Relacao_IDF != 'Municipio não encontrado':
+
+    Area_Bacia = float(input('Digite a area da bacia em km²: '))
+    Comprimento_Curso = float(input('Digite o comprimento do curso dágua em km: '))
+    Cota_Maxima = float(input('Digite a cota maxima da Bacia Hidrografica em m: '))
+    Cota_Controle = float(input('Digite a conta do ponto de controle: '))
+    Tempo_Retorno = int (input('Digite o tempo de retorno em anos: '))
+    print ('\n')
+
+    # Contas basicas
+    DESNIVEL = Cota_Maxima - Cota_Controle
+    DECLIVIDADE = DESNIVEL/(Comprimento_Curso*1000)
+
+    # Chamada das funções
+    TEMPO_CONCENTRACAO = tempo(Comprimento_Curso, DESNIVEL)
+    INTENSIDADE = intensidade(Tempo_Retorno, TEMPO_CONCENTRACAO, **Relacao_IDF)
+    COEFICIENTE = coeficienterunoff(DECLIVIDADE)
+    VAZAO_Q = vazao(COEFICIENTE, INTENSIDADE, Area_Bacia)
+    
+    # Resultados
+    print (f'\nCom base nas caracteristicas do município e dos dados informados:\n' \
+            + f'O tempo de concentração da chuva para a bacia é de: {round (TEMPO_CONCENTRACAO, 2)} minutos \n'\
+            + f'A intensidade de precipitação é de: {round (INTENSIDADE, 2)} mm/h \n'\
+            + f'A vazao de projeto é de: {round (VAZAO_Q, 2)} m³/s\n')
+else:
+    print ('Municipio não encontrado')
